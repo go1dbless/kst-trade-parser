@@ -1,0 +1,13 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@google-cloud/local-auth": "2.1.0",
+    "google-spreadsheet": "^3.3.0",
+    "googleapis": "105",
+    "puppeteer": "^19.10.1"
+  },
+  "name": "kst-trade-parse",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT"
+}

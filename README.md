@@ -1,0 +1,3 @@
+- npm install
+- sudo apt-get install chromium-browser
+- sudo snap install chromium

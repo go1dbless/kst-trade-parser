@@ -2,6 +2,11 @@ import puppeteer from 'puppeteer';
 import { GoogleSpreadsheet } from "google-spreadsheet"
 import fs from 'fs';
 import path from 'path';
+import argsparser from "args-parser";
+
+const args = argsparser(process.argv);
+
+
 
 const delay = (time) => {
   return new Promise(function (resolve) {
@@ -13,7 +18,6 @@ const parse = async (user) => {
   const baseUrl = "http://karta.ksttrade.kz";
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/chromium-browser',
-    headless: false
   });
   const page = await browser.newPage();
 
@@ -82,11 +86,17 @@ function saveToJsonFile(filePath, data) {
 }
 
 
+
 const getData = async () => {
+  if(!args['table-id']){
+    console.log('Укажите идентификатор таблицы в качестве аргумента. --table-id=<id таблицы>')
+    return;
+  }
   const users = [{
     login: 'i.kitaygora@toyota-kostanay.kz',
     pass: '2wGwIgYD'
   }]
+
   let cards = []
 
   for (const user of users) {
@@ -94,7 +104,9 @@ const getData = async () => {
 
     for (const cdata of cardsT) {
       for (const crd of cdata) {
-        cards.push([crd.actual, crd.card, crd.name, crd.balance])
+        if(crd.balance>0){
+          cards.push([crd.actual, crd.card, crd.name, crd.balance])
+        }
       }
     }
   }
@@ -111,7 +123,8 @@ const getData = async () => {
 
   saveToJsonFile(`backlog/${formattedDate.replaceAll(':','.')}.json`, cards)
 
-  const doc = new GoogleSpreadsheet('17eeO9eNJBAB0nYghpjMCo_ipNC53M_sLipt_VebCT8k');
+  //17eeO9eNJBAB0nYghpjMCo_ipNC53M_sLipt_VebCT8k
+  const doc = new GoogleSpreadsheet(args['table-id']);
 
   await doc.useServiceAccountAuth({
     client_email: "ksttrade@my-project-1547447941836.iam.gserviceaccount.com",
